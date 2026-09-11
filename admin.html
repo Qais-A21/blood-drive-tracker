@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Blood Drive Admin</title>
+<style>
+  :root{
+    --navy:#0c2c80;
+    --sky:#a7d4f2;
+    --yellow:#ffee7d;
+    --cream:#fdf9f3;
+    --ink:#1b1f23;
+    --blood:#b3121c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:24px 16px 60px;
+  }
+  .card{
+    width:100%;
+    max-width:420px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 4px 20px rgba(12,44,128,0.12);
+    padding:24px;
+  }
+  h1{
+    color:var(--navy);
+    font-size:20px;
+    margin-bottom:4px;
+  }
+  .sub{
+    font-size:13px;
+    opacity:0.65;
+    margin-bottom:20px;
+  }
+  fieldset{
+    border:1px solid var(--sky);
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:16px;
+  }
+  legend{
+    font-size:12px;
+    font-weight:700;
+    color:var(--navy);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    padding:0 4px;
+  }
+  label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink);
+    margin:10px 0 4px;
+  }
+  input[type=text], input[type=password], input[type=number]{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #d8dde3;
+    border-radius:8px;
+    font-size:15px;
+  }
+  .count-controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:6px;
+  }
+  .count-controls input{
+    text-align:center;
+    font-size:22px;
+    font-weight:800;
+    color:var(--blood);
+  }
+  .step-btn{
+    flex:0 0 auto;
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    border:none;
+    background:var(--sky);
+    color:var(--navy);
+    font-size:22px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .step-btn:active{ transform:scale(0.95); }
+  button.primary{
+    width:100%;
+    margin-top:18px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:var(--navy);
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  button.primary:disabled{ opacity:0.5; cursor:not-allowed; }
+  .status{
+    margin-top:14px;
+    font-size:13px;
+    min-height:18px;
+    text-align:center;
+  }
+  .status.ok{ color:#1a7d3b; }
+  .status.err{ color:var(--blood); }
+  .status.busy{ color:var(--navy); }
+  .hint{
+    font-size:11px;
+    opacity:0.55;
+    margin-top:4px;
+  }
+  .badge{
+    display:inline-block;
+    background:var(--yellow);
+    color:var(--navy);
+    font-size:11px;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:6px;
+    margin-bottom:10px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">PRIVATE — DO NOT SHARE THIS PAGE</span>
+    <h1>Blood Drive Admin</h1>
+    <div class="sub">Update the live donation count. This page writes directly to your GitHub repo.</div>
+
+    <fieldset>
+      <legend>Repo settings (one-time)</legend>
+      <label>GitHub username / org</label>
+      <input type="text" id="owner" placeholder="e.g. luayalsayyed">
+      <label>Repository name</label>
+      <input type="text" id="repo" placeholder="e.g. blood-drive-tracker">
+      <label>Branch</label>
+      <input type="text" id="branch" value="main">
+      <label>Personal Access Token</label>
+      <input type="password" id="pat" placeholder="github_pat_...">
+      <div class="hint">Create a fine-grained token scoped to only this repo, with "Contents: Read and write" permission. Stored only in this browser's local storage — never shared.</div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Donation count</legend>
+      <div class="count-controls">
+        <button class="step-btn" id="minus">−</button>
+        <input type="number" id="countInput" value="0" min="0">
+        <button class="step-btn" id="plus">+</button>
+      </div>
+      <label>Target</label>
+      <input type="number" id="targetInput" value="200" min="1">
+    </fieldset>
+
+    <button class="primary" id="saveBtn">Update Tracker</button>
+    <div class="status" id="status"></div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const owner = $('owner'), repo = $('repo'), branch = $('branch'), pat = $('pat');
+  const countInput = $('countInput'), targetInput = $('targetInput');
+  const saveBtn = $('saveBtn'), statusEl = $('status');
+
+  const STORAGE_KEY = 'bloodDriveAdminConfig';
+
+  function loadConfig(){
+    try{
+      const cfg = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      if(cfg.owner) owner.value = cfg.owner;
+      if(cfg.repo) repo.value = cfg.repo;
+      if(cfg.branch) branch.value = cfg.branch;
+      if(cfg.pat) pat.value = cfg.pat;
+      if(cfg.target) targetInput.value = cfg.target;
+    }catch(e){}
+  }
+
+  function saveConfig(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      owner: owner.value.trim(),
+      repo: repo.value.trim(),
+      branch: branch.value.trim() || 'main',
+      pat: pat.value.trim(),
+      target: targetInput.value
+    }));
+  }
+
+  function setStatus(msg, cls){
+    statusEl.textContent = msg;
+    statusEl.className = 'status ' + (cls || '');
+  }
+
+  async function fetchCurrent(){
+    if(!owner.value || !repo.value || !pat.value) return;
+    try{
+      const url = `https://api.github.com/repos/${owner.value.trim()}/${repo.value.trim()}/contents/data.json?ref=${branch.value.trim() || 'main'}`;
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': 'Bearer ' + pat.value.trim(),
+          'Accept': 'application/vnd.github+json'
+        }
+      });
+      if(!res.ok) return;
+      const json = await res.json();
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(json.content))));
+      countInput.value = decoded.count ?? 0;
+      targetInput.value = decoded.target ?? 200;
+    }catch(e){ /* ignore, keep manual entry */ }
+  }
+
+  $('minus').onclick = () => { countInput.value = Math.max(0, (parseInt(countInput.value)||0) - 1); };
+  $('plus').onclick = () => { countInput.value = (parseInt(countInput.value)||0) + 1; };
+
+  saveBtn.onclick = async () => {
+    const o = owner.value.trim(), r = repo.value.trim(), b = branch.value.trim() || 'main', t = pat.value.trim();
+    const count = parseInt(countInput.value) || 0;
+    const target = parseInt(targetInput.value) || 200;
+
+    if(!o || !r || !t){
+      setStatus('Please fill in owner, repo, and token.', 'err');
+      return;
+    }
+
+    saveConfig();
+    saveBtn.disabled = true;
+    setStatus('Saving...', 'busy');
+
+    const apiUrl = `https://api.github.com/repos/${o}/${r}/contents/data.json`;
+    const headers = {
+      'Authorization': 'Bearer ' + t,
+      'Accept': 'application/vnd.github+json'
+    };
+
+    try{
+      let sha = null;
+      const getRes = await fetch(`${apiUrl}?ref=${b}`, { headers });
+      if(getRes.ok){
+        const getJson = await getRes.json();
+        sha = getJson.sha;
+      } else if (getRes.status !== 404) {
+        const errBody = await getRes.text();
+        throw new Error(`Could not read data.json (${getRes.status}): ${errBody}`);
+      }
+
+      const payload = {
+        count: count,
+        target: target,
+        updated: new Date().toISOString()
+      };
+      const contentStr = JSON.stringify(payload, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
+
+      const body = {
+        message: `Update donation count to ${count}`,
+        content: base64Content,
+        branch: b
+      };
+      if(sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if(!putRes.ok){
+        const errBody = await putRes.text();
+        throw new Error(`GitHub API error (${putRes.status}): ${errBody}`);
+      }
+
+      setStatus(`Updated to ${count} / ${target}. Live page will reflect it shortly.`, 'ok');
+    }catch(e){
+      setStatus('Failed: ' + e.message, 'err');
+    }finally{
+      saveBtn.disabled = false;
+    }
+  };
+
+  loadConfig();
+  fetchCurrent();
+</script>
+</body>
+</html>
