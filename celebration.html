@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>We Saved 600 Lives</title>
+<style>
+  :root{
+    --navy:#0c2c80;
+    --sky:#a7d4f2;
+    --yellow:#ffee7d;
+    --cream:#fdf9f3;
+    --ink:#1b1f23;
+    --blood:#b3121c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:32px 6vw 60px;
+    min-height:100vh;
+  }
+  .logo-block{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    align-self:flex-start;
+    margin-bottom:8px;
+  }
+  .logo{
+    height:56px;
+    width:auto;
+  }
+  .logo-word{
+    font-size:11px;
+    font-weight:800;
+    color:var(--navy);
+    letter-spacing:0.08em;
+    text-align:left;
+    line-height:1.25;
+  }
+  .hero{
+    margin-top:18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+  .mascot-hero{
+    height:clamp(110px,32vw,180px);
+    width:auto;
+  }
+  .kicker{
+    font-size:clamp(12px,3vw,15px);
+    font-weight:700;
+    color:var(--navy);
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    opacity:0.75;
+  }
+  h1{
+    font-size:clamp(15px,3.2vw,17px);
+    color:var(--ink);
+    font-weight:600;
+    margin-top:6px;
+    max-width:480px;
+    line-height:1.4;
+  }
+  .big-number{
+    margin:14px 0 4px;
+    font-size:clamp(48px,15vw,96px);
+    font-weight:900;
+    color:var(--blood);
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .big-caption{
+    font-size:clamp(18px,4.4vw,28px);
+    font-weight:800;
+    color:var(--navy);
+    letter-spacing:0.01em;
+    margin-bottom:6px;
+  }
+  .thanks{
+    max-width:520px;
+    font-size:clamp(14px,3.4vw,17px);
+    line-height:1.6;
+    color:var(--ink);
+    margin-top:10px;
+  }
+  .thanks strong{ color:var(--navy); }
+
+  .gallery{
+    display:flex;
+    justify-content:center;
+    gap:clamp(10px,3vw,20px);
+    margin:32px 0 8px;
+    flex-wrap:wrap;
+  }
+  .gallery-card{
+    width:clamp(90px,26vw,140px);
+    height:clamp(90px,26vw,140px);
+    background:var(--sky);
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 14px rgba(12,44,128,0.15);
+    overflow:hidden;
+  }
+  .gallery-card img{
+    width:70%;
+    height:70%;
+    object-fit:contain;
+  }
+
+  .cta-block{
+    margin-top:38px;
+    background:var(--navy);
+    color:var(--cream);
+    border-radius:20px;
+    padding:28px 6vw;
+    max-width:560px;
+    width:100%;
+  }
+  .cta-block .line1{
+    font-size:clamp(16px,4vw,22px);
+    font-weight:800;
+    margin-bottom:8px;
+  }
+  .cta-block .line2{
+    font-size:clamp(13px,3.4vw,16px);
+    line-height:1.55;
+    opacity:0.92;
+  }
+  .cta-block .heart{
+    color:var(--yellow);
+  }
+
+  .footer-credit{
+    margin-top:30px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--navy);
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    opacity:0.7;
+  }
+</style>
+</head>
+<body>
+  <div class="logo-block">
+    <img class="logo" src="assets/logo.jpg" alt="Resala AUC logo">
+    <div class="logo-word">RESALA<br>AUC</div>
+  </div>
+
+  <div class="hero">
+    <img class="mascot-hero" src="assets/character.png" alt="Blood drop mascot celebrating">
+    <div class="kicker">Blood Drive · Goal Complete</div>
+    <h1>200 donors rolled up their sleeves — here's what that means.</h1>
+  </div>
+
+  <div class="big-number">600</div>
+  <div class="big-caption">Lives Saved</div>
+
+  <div class="thanks">
+    Every donation carries the chance to save <strong>three lives</strong>. Because <strong>200 people</strong> showed up for this drive, roughly <strong>600 people</strong> now have a better chance — a mother in surgery, a child after an accident, someone fighting cancer. <strong>Thank you.</strong>
+  </div>
+
+  <div class="gallery">
+    <div class="gallery-card"><img src="assets/character.png" alt="Blood drive moment"></div>
+    <div class="gallery-card"><img src="assets/character.png" alt="Blood drive moment"></div>
+    <div class="gallery-card"><img src="assets/character.png" alt="Blood drive moment"></div>
+  </div>
+
+  <div class="cta-block">
+    <div class="line1">We can still save more <span class="heart">♥</span></div>
+    <div class="line2">This goal is met, but the need for blood never really ends. If you couldn't make it this time — or want to do more — reach out to Resala AUC about the next drive. Someone out there is still waiting.</div>
+  </div>
+
+  <div class="footer-credit">In partnership with Resala AUC</div>
+</body>
+</html>
