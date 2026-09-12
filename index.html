@@ -39,9 +39,10 @@
     z-index:2;
   }
   .mascot-top{
-    height:clamp(26px,4.5vh,38px);
+    height:clamp(32px,6vh,48px);
     width:auto;
     display:block;
+    margin:0 auto;
   }
   h1{
     font-size:clamp(20px, 5.5vw, 34px);
@@ -80,38 +81,14 @@
     pointer-events:none;
     z-index:1;
   }
-  .logo-block{
+  .logo{
     position:fixed;
     top:calc(env(safe-area-inset-top,0px) + 10px);
     left:calc(env(safe-area-inset-left,0px) + 10px);
-    z-index:2;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .logo{
     height:clamp(60px,16vw,100px);
     width:auto;
     opacity:0.95;
-  }
-  .logo-word{
-    font-size:clamp(9px,2.2vw,12px);
-    font-weight:800;
-    color:var(--navy);
-    line-height:1.25;
-    letter-spacing:0.08em;
-    text-align:left;
-  }
-  .mascot-ring{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:clamp(48px,10vh,68px);
-    height:clamp(48px,10vh,68px);
-    border-radius:50%;
-    border:3px solid var(--navy);
-    background:var(--sky);
-    margin:0 auto;
+    z-index:2;
   }
   .count-row{
     display:flex;
@@ -216,11 +193,9 @@
     padding-bottom:clamp(10px,3vh,24px);
     font-size:clamp(10px,2.4vw,13px);
     color:var(--ink);
+    opacity:0.5;
     position:relative;
     z-index:2;
-  }
-  #updated{
-    opacity:0.5;
   }
   @media (max-width:420px){
     .side-mascot{ height:clamp(70px,22vh,140px); opacity:0.8; }
@@ -228,16 +203,11 @@
 </style>
 </head>
 <body>
-  <div class="logo-block">
-    <img class="logo" src="assets/logo.jpg" alt="Resala AUC logo">
-    <div class="logo-word">RESALA<br>AUC</div>
-  </div>
+  <img class="logo" src="assets/logo.jpg" alt="Resala AUC logo">
   <img class="side-mascot" src="assets/character.png" alt="">
 
   <div class="top">
-    <div class="mascot-ring">
-      <img class="mascot-top" src="assets/character.png" alt="Blood drop mascot">
-    </div>
+    <img class="mascot-top" src="assets/character.png" alt="Blood drop mascot">
     <h1>Blood Drive</h1>
     <div class="subtitle">Live Donation Tracker</div>
   </div>
@@ -280,6 +250,7 @@
       </svg>
 
       <div class="bag-label">
+        <div class="drop-icon">🩸</div>
         <div class="quote">ONE DONATION CAN SAVE THREE LIVES</div>
         <div class="heart-row">— ❤ —</div>
       </div>
@@ -287,9 +258,7 @@
     <div class="pct" id="pct">0%</div>
   </div>
 
-  <div class="bottom">
-    <div id="updated">Last updated: —</div>
-  </div>
+  <div class="bottom" id="updated">Last updated: —</div>
 
   <script>
     const countEl = document.getElementById('count');
@@ -339,11 +308,6 @@
         pctEl.textContent = Math.round(pct) + '%';
 
         document.body.classList.toggle('goal-reached', count >= target);
-
-        if (count >= target) {
-          setTimeout(() => { window.location.href = './celebration.html'; }, 1800);
-          return;
-        }
 
         if (data.updated) {
           const d = new Date(data.updated);
