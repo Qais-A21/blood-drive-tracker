@@ -2,293 +2,281 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Blood Drive Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0c2c80">
+<title>Blood Drive Control Panel</title>
 <style>
   :root{
-    --navy:#0c2c80;
-    --sky:#a7d4f2;
-    --yellow:#ffee7d;
-    --cream:#fdf9f3;
-    --ink:#1b1f23;
-    --blood:#b3121c;
+    --navy:#0c2c80; --sky:#a7d4f2; --yellow:#ffee7d; --cream:#fdf9f3;
+    --ink:#1b1f23; --blood:#b3121c; --blood-bright:#e0202e; --blood-dark:#7d0d13;
+    --ok:#1a7d3b;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{
-    min-height:100vh;
-    background:var(--cream);
+    min-height:100vh; min-height:100dvh;
+    background:radial-gradient(circle at 10% 5%, rgba(167,212,242,.7) 0, transparent 45%), var(--cream);
     color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    display:flex;
-    justify-content:center;
-    padding:24px 16px 60px;
+    display:flex; justify-content:center;
+    padding:max(env(safe-area-inset-top),16px) 16px max(env(safe-area-inset-bottom),30px);
   }
   .card{
-    width:100%;
-    max-width:420px;
-    background:#fff;
-    border-radius:16px;
-    box-shadow:0 4px 20px rgba(12,44,128,0.12);
-    padding:24px;
+    width:100%; max-width:440px; height:fit-content;
+    background:#fff; border-radius:24px;
+    box-shadow:0 10px 36px rgba(12,44,128,.15);
+    padding:22px 20px 24px;
   }
-  h1{
-    color:var(--navy);
-    font-size:20px;
-    margin-bottom:4px;
+  .warn{
+    display:inline-block; background:var(--yellow); color:var(--navy);
+    font-size:11px; font-weight:800; letter-spacing:.05em;
+    padding:4px 10px; border-radius:8px; margin-bottom:10px;
   }
-  .sub{
-    font-size:13px;
-    opacity:0.65;
-    margin-bottom:20px;
+  h1{color:var(--navy); font-size:22px; font-weight:900;}
+  .sub{font-size:13px; opacity:.6; margin:2px 0 18px;}
+
+  .display{
+    text-align:center; padding:14px 0 18px;
+    background:linear-gradient(180deg,#fff5f5,#fff); border-radius:18px;
+    border:1px solid #f3d6d8;
   }
-  fieldset{
-    border:1px solid var(--sky);
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:16px;
+  .num{
+    font-size:84px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums;
+    background:linear-gradient(180deg,var(--blood-bright),var(--blood-dark));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
   }
-  legend{
-    font-size:12px;
-    font-weight:700;
-    color:var(--navy);
-    text-transform:uppercase;
-    letter-spacing:0.06em;
-    padding:0 4px;
+  .of{font-size:15px; font-weight:700; color:var(--navy); opacity:.65; margin-top:2px;}
+  .bar{height:10px; background:#e6ecf5; border-radius:99px; margin:14px 22px 0; overflow:hidden;}
+  .bar i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blood-dark),var(--blood-bright)); transition:width .4s;}
+
+  .big{
+    width:100%; margin-top:14px; padding:26px 10px; border:none; border-radius:20px;
+    background:linear-gradient(180deg,var(--blood-bright),var(--blood-dark));
+    color:#fff; font-size:34px; font-weight:900; letter-spacing:.02em;
+    box-shadow:0 8px 20px rgba(179,18,28,.35); cursor:pointer;
+    user-select:none; touch-action:manipulation;
   }
-  label{
-    display:block;
-    font-size:12px;
-    font-weight:600;
-    color:var(--ink);
-    margin:10px 0 4px;
+  .big:active{transform:scale(.97); box-shadow:0 3px 10px rgba(179,18,28,.35);}
+  .row{display:flex; gap:10px; margin-top:10px;}
+  .row button{
+    flex:1; padding:16px 0; border:none; border-radius:14px;
+    background:var(--sky); color:var(--navy); font-size:18px; font-weight:800;
+    cursor:pointer; touch-action:manipulation; user-select:none;
   }
-  input[type=text], input[type=password], input[type=number]{
-    width:100%;
-    padding:10px 12px;
-    border:1px solid #d8dde3;
-    border-radius:8px;
-    font-size:15px;
-  }
-  .count-controls{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:6px;
-  }
-  .count-controls input{
-    text-align:center;
-    font-size:22px;
-    font-weight:800;
-    color:var(--blood);
-  }
-  .step-btn{
-    flex:0 0 auto;
-    width:48px;
-    height:48px;
-    border-radius:50%;
-    border:none;
-    background:var(--sky);
-    color:var(--navy);
-    font-size:22px;
-    font-weight:800;
-    cursor:pointer;
-  }
-  .step-btn:active{ transform:scale(0.95); }
-  button.primary{
-    width:100%;
-    margin-top:18px;
-    padding:14px;
-    border:none;
-    border-radius:10px;
-    background:var(--navy);
-    color:#fff;
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-  }
-  button.primary:disabled{ opacity:0.5; cursor:not-allowed; }
+  .row button:active{transform:scale(.95);}
+  .row button.minus{background:#eef1f6;}
+
   .status{
-    margin-top:14px;
-    font-size:13px;
-    min-height:18px;
-    text-align:center;
+    margin-top:14px; min-height:20px; text-align:center;
+    font-size:13px; font-weight:700; color:var(--navy);
   }
-  .status.ok{ color:#1a7d3b; }
-  .status.err{ color:var(--blood); }
-  .status.busy{ color:var(--navy); }
-  .hint{
-    font-size:11px;
-    opacity:0.55;
-    margin-top:4px;
+  .status.ok{color:var(--ok);} .status.err{color:var(--blood);}
+
+  details{margin-top:16px; border-top:1px solid #eceff4; padding-top:14px;}
+  summary{font-size:13px; font-weight:800; color:var(--navy); cursor:pointer; list-style:none;}
+  summary::before{content:"⚙ ";}
+  label{display:block; font-size:12px; font-weight:700; margin:12px 0 4px;}
+  input{
+    width:100%; padding:11px 12px; border:1px solid #d8dde3; border-radius:10px; font-size:15px;
+    background:#fff; color:var(--ink);
   }
-  .badge{
-    display:inline-block;
-    background:var(--yellow);
-    color:var(--navy);
-    font-size:11px;
-    font-weight:700;
-    padding:2px 8px;
-    border-radius:6px;
-    margin-bottom:10px;
+  .two{display:flex; gap:10px;} .two>div{flex:1;}
+  .hint{font-size:11.5px; opacity:.6; margin-top:6px; line-height:1.45;}
+  .btn2{
+    margin-top:12px; width:100%; padding:12px; border:none; border-radius:10px;
+    background:var(--navy); color:#fff; font-size:14px; font-weight:700; cursor:pointer;
   }
+  .btn2.ghost{background:#fff; color:var(--blood); border:1px solid #f0c3c6;}
+
+  /* setup screen */
+  #setup{display:none;}
+  body.needs-setup #setup{display:block;}
+  body.needs-setup #panel{display:none;}
+  ol{margin:8px 0 0 18px; font-size:13px; line-height:1.7;}
+  a{color:var(--navy); font-weight:700;}
 </style>
 </head>
 <body>
-  <div class="card">
-    <span class="badge">PRIVATE — DO NOT SHARE THIS PAGE</span>
-    <h1>Blood Drive Admin</h1>
-    <div class="sub">Update the live donation count. This page writes directly to your GitHub repo.</div>
+<div class="card">
+  <span class="warn">PRIVATE — DO NOT SHARE THIS PAGE</span>
+  <h1>Blood Drive Control Panel</h1>
+  <div class="sub">Tap to update the live counter.</div>
 
-    <fieldset>
-      <legend>Repo settings (one-time)</legend>
-      <label>GitHub username / org</label>
-      <input type="text" id="owner" placeholder="e.g. luayalsayyed">
-      <label>Repository name</label>
-      <input type="text" id="repo" placeholder="e.g. blood-drive-tracker">
-      <label>Branch</label>
-      <input type="text" id="branch" value="main">
-      <label>Personal Access Token</label>
-      <input type="password" id="pat" placeholder="github_pat_...">
-      <div class="hint">Create a fine-grained token scoped to only this repo, with "Contents: Read and write" permission. Stored only in this browser's local storage — never shared.</div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Donation count</legend>
-      <div class="count-controls">
-        <button class="step-btn" id="minus">−</button>
-        <input type="number" id="countInput" value="0" min="0">
-        <button class="step-btn" id="plus">+</button>
-      </div>
-      <label>Target</label>
-      <input type="number" id="targetInput" value="200" min="1">
-    </fieldset>
-
-    <button class="primary" id="saveBtn">Update Tracker</button>
-    <div class="status" id="status"></div>
+  <!-- one-time token setup -->
+  <div id="setup">
+    <label style="margin-top:0">One-time setup — GitHub token</label>
+    <ol>
+      <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → New fine-grained token</a>.</li>
+      <li>Repository access: <b>Only select repositories</b> → <b>blood-drive-tracker</b>.</li>
+      <li>Permissions → Repository → <b>Contents: Read and write</b>.</li>
+      <li>Generate, copy the token and paste it below.</li>
+    </ol>
+    <label for="patSetup">Token</label>
+    <input type="password" id="patSetup" placeholder="github_pat_..." autocomplete="off">
+    <button class="btn2" id="saveToken">Save &amp; start</button>
+    <div class="hint">The token is stored only in this browser. Never paste it anywhere else.</div>
+    <div class="status err" id="setupErr"></div>
   </div>
+
+  <!-- main panel -->
+  <div id="panel">
+    <div class="display">
+      <div class="num" id="num">0</div>
+      <div class="of">of <span id="tgt">200</span> donations</div>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+
+    <button class="big" id="plus1">+ 1 DONATION</button>
+    <div class="row">
+      <button class="minus" id="minus1">− 1</button>
+      <button id="plus5">+ 5</button>
+      <button id="plus10">+ 10</button>
+    </div>
+    <div class="status" id="status"></div>
+
+    <details>
+      <summary>Settings</summary>
+      <label for="exact">Set exact count</label>
+      <div class="two">
+        <div><input type="number" id="exact" inputmode="numeric" min="0" placeholder="e.g. 42"></div>
+        <button class="btn2" style="margin:0;width:auto;padding:0 18px" id="setExact">Set</button>
+      </div>
+      <label for="target">Target</label>
+      <div class="two">
+        <div><input type="number" id="target" inputmode="numeric" min="1"></div>
+        <button class="btn2" style="margin:0;width:auto;padding:0 18px" id="setTarget">Save</button>
+      </div>
+      <button class="btn2 ghost" id="reset">Reset counter to 0</button>
+      <label for="owner">GitHub user</label><input id="owner">
+      <label for="repo">Repository</label><input id="repo">
+      <label for="branch">Branch</label><input id="branch">
+      <button class="btn2 ghost" id="forget">Remove token from this device</button>
+    </details>
+  </div>
+</div>
 
 <script>
   const $ = id => document.getElementById(id);
-  const owner = $('owner'), repo = $('repo'), branch = $('branch'), pat = $('pat');
-  const countInput = $('countInput'), targetInput = $('targetInput');
-  const saveBtn = $('saveBtn'), statusEl = $('status');
+  const KEY = 'bloodDriveAdminConfig';
+  const DEFAULTS = { owner:'Qais-A21', repo:'blood-drive-tracker', branch:'main', pat:'' };
+  let cfg = { ...DEFAULTS };
+  try { cfg = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch(e){}
 
-  const STORAGE_KEY = 'bloodDriveAdminConfig';
+  let count = 0, target = 200;   // what the screen shows (optimistic)
+  let dirty = false, saving = false, saveTimer = null;
 
-  function loadConfig(){
+  const persistCfg = () => localStorage.setItem(KEY, JSON.stringify(cfg));
+  const api = () => `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.json`;
+  const headers = () => ({ 'Authorization':'Bearer ' + cfg.pat, 'Accept':'application/vnd.github+json' });
+
+  function status(msg, cls){ $('status').textContent = msg; $('status').className = 'status ' + (cls||''); }
+
+  function render(){
+    $('num').textContent = count;
+    $('tgt').textContent = target;
+    $('barFill').style.width = Math.min(100, count / target * 100) + '%';
+  }
+
+  function applySetup(){
+    document.body.classList.toggle('needs-setup', !cfg.pat);
+    $('owner').value = cfg.owner; $('repo').value = cfg.repo; $('branch').value = cfg.branch;
+  }
+
+  // ---- read current value from GitHub ----
+  async function load(){
     try{
-      const cfg = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      if(cfg.owner) owner.value = cfg.owner;
-      if(cfg.repo) repo.value = cfg.repo;
-      if(cfg.branch) branch.value = cfg.branch;
-      if(cfg.pat) pat.value = cfg.pat;
-      if(cfg.target) targetInput.value = cfg.target;
-    }catch(e){}
+      const r = await fetch(`${api()}?ref=${cfg.branch}&t=${Date.now()}`, { headers: headers(), cache:'no-store' });
+      if(r.status === 401){ status('Token rejected — remove it in Settings and add a new one.', 'err'); return; }
+      if(!r.ok){ status('Could not load current count (' + r.status + ').', 'err'); return; }
+      const j = await r.json();
+      const d = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), c => c.charCodeAt(0))));
+      count = Math.max(0, Number(d.count) || 0);
+      target = Math.max(1, Number(d.target) || 200);
+      $('target').value = target;
+      render(); status('Connected ✓', 'ok');
+    }catch(e){ status('Offline — check your connection.', 'err'); }
   }
 
-  function saveConfig(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      owner: owner.value.trim(),
-      repo: repo.value.trim(),
-      branch: branch.value.trim() || 'main',
-      pat: pat.value.trim(),
-      target: targetInput.value
-    }));
+  // ---- write (debounced so rapid taps become one commit) ----
+  function queueSave(){
+    dirty = true; render();
+    status('Saving…');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 900);
   }
 
-  function setStatus(msg, cls){
-    statusEl.textContent = msg;
-    statusEl.className = 'status ' + (cls || '');
-  }
-
-  async function fetchCurrent(){
-    if(!owner.value || !repo.value || !pat.value) return;
+  async function save(){
+    if(saving){ saveTimer = setTimeout(save, 400); return; }
+    saving = true; dirty = false;
+    const snapshot = count, tgt = target;
     try{
-      const url = `https://api.github.com/repos/${owner.value.trim()}/${repo.value.trim()}/contents/data.json?ref=${branch.value.trim() || 'main'}`;
-      const res = await fetch(url, {
-        headers: {
-          'Authorization': 'Bearer ' + pat.value.trim(),
-          'Accept': 'application/vnd.github+json'
+      for(let attempt = 0; attempt < 3; attempt++){
+        const g = await fetch(`${api()}?ref=${cfg.branch}&t=${Date.now()}`, { headers: headers(), cache:'no-store' });
+        let sha = null;
+        if(g.ok) sha = (await g.json()).sha;
+        else if(g.status !== 404) throw new Error('read ' + g.status);
+
+        const body = JSON.stringify({ count: snapshot, target: tgt, updated: new Date().toISOString() }, null, 2);
+        const put = await fetch(api(), {
+          method:'PUT',
+          headers:{ ...headers(), 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            message: `Update donation count to ${snapshot}`,
+            content: btoa(String.fromCharCode(...new TextEncoder().encode(body))),
+            branch: cfg.branch,
+            ...(sha ? { sha } : {})
+          })
+        });
+        if(put.ok){
+          status(dirty ? 'Saving…' : `Saved: ${snapshot} / ${tgt} ✓ (live in ~1 min)`, dirty ? '' : 'ok');
+          return;
         }
-      });
-      if(!res.ok) return;
-      const json = await res.json();
-      const decoded = JSON.parse(decodeURIComponent(escape(atob(json.content))));
-      countInput.value = decoded.count ?? 0;
-      targetInput.value = decoded.target ?? 200;
-    }catch(e){ /* ignore, keep manual entry */ }
+        if(put.status !== 409 && put.status !== 422) throw new Error('write ' + put.status);
+      }
+      throw new Error('conflict');
+    }catch(e){
+      status('Save failed (' + e.message + '). Tap again to retry.', 'err');
+      dirty = true;
+    }finally{
+      saving = false;
+    }
   }
 
-  $('minus').onclick = () => { countInput.value = Math.max(0, (parseInt(countInput.value)||0) - 1); };
-  $('plus').onclick = () => { countInput.value = (parseInt(countInput.value)||0) + 1; };
+  const change = n => { count = Math.max(0, count + n); queueSave(); };
 
-  saveBtn.onclick = async () => {
-    const o = owner.value.trim(), r = repo.value.trim(), b = branch.value.trim() || 'main', t = pat.value.trim();
-    const count = parseInt(countInput.value) || 0;
-    const target = parseInt(targetInput.value) || 200;
+  $('plus1').onclick  = () => { change(1); if(navigator.vibrate) navigator.vibrate(15); };
+  $('plus5').onclick  = () => change(5);
+  $('plus10').onclick = () => change(10);
+  $('minus1').onclick = () => change(-1);
 
-    if(!o || !r || !t){
-      setStatus('Please fill in owner, repo, and token.', 'err');
-      return;
-    }
-
-    saveConfig();
-    saveBtn.disabled = true;
-    setStatus('Saving...', 'busy');
-
-    const apiUrl = `https://api.github.com/repos/${o}/${r}/contents/data.json`;
-    const headers = {
-      'Authorization': 'Bearer ' + t,
-      'Accept': 'application/vnd.github+json'
-    };
-
-    try{
-      let sha = null;
-      const getRes = await fetch(`${apiUrl}?ref=${b}`, { headers });
-      if(getRes.ok){
-        const getJson = await getRes.json();
-        sha = getJson.sha;
-      } else if (getRes.status !== 404) {
-        const errBody = await getRes.text();
-        throw new Error(`Could not read data.json (${getRes.status}): ${errBody}`);
-      }
-
-      const payload = {
-        count: count,
-        target: target,
-        updated: new Date().toISOString()
-      };
-      const contentStr = JSON.stringify(payload, null, 2);
-      const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
-
-      const body = {
-        message: `Update donation count to ${count}`,
-        content: base64Content,
-        branch: b
-      };
-      if(sha) body.sha = sha;
-
-      const putRes = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      if(!putRes.ok){
-        const errBody = await putRes.text();
-        throw new Error(`GitHub API error (${putRes.status}): ${errBody}`);
-      }
-
-      setStatus(`Updated to ${count} / ${target}. Live page will reflect it shortly.`, 'ok');
-    }catch(e){
-      setStatus('Failed: ' + e.message, 'err');
-    }finally{
-      saveBtn.disabled = false;
-    }
+  $('setExact').onclick = () => {
+    const v = parseInt($('exact').value);
+    if(isNaN(v) || v < 0) return;
+    count = v; $('exact').value = ''; queueSave();
+  };
+  $('setTarget').onclick = () => {
+    const v = parseInt($('target').value);
+    if(isNaN(v) || v < 1) return;
+    target = v; queueSave();
+  };
+  $('reset').onclick = () => {
+    if(confirm('Reset the live counter to 0?')){ count = 0; queueSave(); }
   };
 
-  loadConfig();
-  fetchCurrent();
+  $('saveToken').onclick = () => {
+    const t = $('patSetup').value.trim();
+    if(!t){ $('setupErr').textContent = 'Paste your token first.'; return; }
+    cfg.pat = t; persistCfg(); applySetup(); load();
+  };
+  $('forget').onclick = () => {
+    if(confirm('Remove the token from this device?')){ cfg.pat = ''; persistCfg(); applySetup(); }
+  };
+  ['owner','repo','branch'].forEach(k => $(k).onchange = () => { cfg[k] = $(k).value.trim() || DEFAULTS[k]; persistCfg(); load(); });
+
+  window.addEventListener('beforeunload', e => { if(dirty || saving){ e.preventDefault(); e.returnValue = ''; } });
+
+  applySetup(); render();
+  if(cfg.pat) load();
 </script>
 </body>
 </html>
