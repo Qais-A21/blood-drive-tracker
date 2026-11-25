@@ -162,6 +162,14 @@
   let cfg = { ...DEFAULTS };
   try { cfg = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch(e){}
 
+  // Setup link: admin.html#token=github_pat_xxx  -> stores token, then wipes it from the address bar
+  const m = location.hash.match(/token=([\w-]+)/);
+  if(m){
+    cfg.pat = m[1];
+    localStorage.setItem(KEY, JSON.stringify(cfg));
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+
   let count = 0, target = 200;   // what the screen shows (optimistic)
   let dirty = false, saving = false, saveTimer = null;
 
